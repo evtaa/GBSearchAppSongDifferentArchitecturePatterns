@@ -17,6 +17,8 @@ final class AppStartManager {
     }
     
     func start() {
+        
+        //let rootVC = SearchSongModuleBuilder.build()
         let rootVC = SearchModuleBuilder.build()
         rootVC.navigationItem.title = "Search via iTunes"
         
