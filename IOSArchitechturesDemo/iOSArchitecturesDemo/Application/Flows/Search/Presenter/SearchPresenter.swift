@@ -29,34 +29,34 @@ final class SearchPresenter {
         self.interactor = interactor
         self.router = router
     }
+}
+
+// MARK: - SearchViewOutput
+extension SearchPresenter: SearchViewOutput {
+    
+    func viewDidSearch(with query: String) {
+        self.viewInput?.throbber(show: true)
+        self.interactor.requestApps(with: query) {  [weak self] result in
+            guard let self = self else { return }
+            self.viewInput?.throbber(show: false)
+            result
+                .withValue { apps in
+                    guard !apps.isEmpty else {
+                        self.viewInput?.showNoResults()
+                        return
+                    }
+                    self.viewInput?.hideNoResults()
+                    self.viewInput?.searchResults = apps
+                }
+                .withError {
+                    self.viewInput?.showError(error: $0)
+                }
+        }
     }
-
-    // MARK: - SearchViewOutput
-    extension SearchPresenter: SearchViewOutput {
-        
-        func viewDidSearch(with query: String) {
-            self.viewInput?.throbber(show: true)
-            self.interactor.requestApps(with: query) {  [weak self] result in
-                guard let self = self else { return }
-                self.viewInput?.throbber(show: false)
-                result
-                    .withValue { apps in
-                        guard !apps.isEmpty else {
-                            self.viewInput?.showNoResults()
-                            return
-                        }
-                        self.viewInput?.hideNoResults()
-                        self.viewInput?.searchResults = apps
-                    }
-                    .withError {
-                        self.viewInput?.showError(error: $0)
-                    }
-            }
-        }
-        
-        func viewDidSelectApp(_ app: ITunesApp) {
-            self.router.openDetails(for: app)
-        }
-
+    
+    func viewDidSelectApp(_ app: ITunesApp) {
+        self.router.openDetails(for: app)
+    }
+    
     
 }
